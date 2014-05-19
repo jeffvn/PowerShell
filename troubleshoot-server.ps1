@@ -1,3 +1,7 @@
+##################################################
+# Script to do some basic client troubleshooting
+# 2014 Jeff VanNieulande
+##################################################
 $exit = 1;
 #cls
 $hostname = read-host "Hostname"
@@ -19,9 +23,17 @@ $choice = read-host "Please choose a menu item"
 cls
 # Check Diskspace...
 if ($choice -eq 1) {
+write-host "Disk space for $hostname :" -foreground "darkyellow"
 $disks = Get-WmiObject Win32_LogicalDisk -ComputerName $hostname | Select Name, Size, FreeSpace
 $disks | foreach-object {
-[int] $freespace / [int] 1028
+$dfree = [long] $_.freespace / [int] 1028 / [int] 1028 / [int] 1028
+$dsize = [long] $_.size / [int] 1028 / [int] 1028 / [int] 1028
+$dfree = [Math]::Round($dfree, 2)
+$dsize = [Math]::Round($dsize, 2)
+write-host $_.name -nonewline -foreground "cyan"
+write-host " $dfree GB" -nonewline -foreground "green"
+write-host " free of " -nonewline
+write-host "$dsize GB" -foreground "yellow"
 }
 }
 
